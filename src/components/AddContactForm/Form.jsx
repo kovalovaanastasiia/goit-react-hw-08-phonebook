@@ -1,14 +1,19 @@
 import React, {useState} from 'react';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 import {createContactThunk} from "../../redux/auth/thunks";
+import {selectContacts} from "../../redux/selectors";
 
 import {StyledForm} from './styled';
+import {toast} from "react-toastify";
+import {toastOptions} from "../../operations/operations";
+
 
 
 export const Form = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const contacts = useSelector(selectContacts);
 
   const dispatch = useDispatch()
 
@@ -23,9 +28,12 @@ export const Form = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-
-    dispatch(createContactThunk({name, number}));
-    setName("");
+if (contacts.some(contact => contact.name === name)) {
+  toast.error(`${name} is already exist!`, toastOptions);
+} else {
+  dispatch(createContactThunk({name, number}));
+}
+   setName("");
     setNumber("");
   };
   return (
